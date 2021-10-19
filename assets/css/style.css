@@ -1,0 +1,58 @@
+body {
+    font-family: 'IM Fell English SC', serif;
+    font-size: larger;
+}
+
+header#header h1 {
+    font-size: 4rem;
+    text-align: center;
+    margin-bottom: 0px;
+    background: rgb(252,176,69);
+    background: linear-gradient(90deg, rgba(252,176,69,1) 20%, rgba(253,29,29,1) 60%, rgba(131,58,180,1) 100%);
+}
+
+footer#footer p {
+    text-align: center;
+    margin-bottom: 0;
+    background: rgb(34,193,195);
+    background: linear-gradient(180deg, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%);
+}
+
+footer#footer p a {
+    color: var(--indigo);
+}
+
+#mainWrapper {
+    /* background: url('../img/clouds.png') no-repeat; */
+    background: url('../img/ship.jpeg') no-repeat;
+    background-size: cover;
+}
+
+#cityContainer {
+    border: 3px solid var(--gray-dark);
+    border-radius: 15px;
+    box-shadow: 10px 10px 15px var(--blue);
+    background-color: var(--light);
+}
+
+#cityInput:focus {
+    box-shadow: 0 0 5px var(--pink);
+}
+
+#searchCity {
+    border: 3px solid var(--blue);
+
+}
+
+#searchCity:active {
+    border-color: var(--pink);
+    box-shadow: 0 0 10px var(--blue);
+}
+
+#weatherData {
+    border: 3px solid var(--dark);
+    border-radius: 15px;
+    box-shadow: 10px 10px 15px var(--blue);
+    background-color: var(--light);
+    min-height: 500px;
+}
