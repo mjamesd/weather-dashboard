@@ -1,6 +1,18 @@
+:root {
+    --light-transparent: #f9fafbbf;
+    --gray-transparent: rgb(108 117 125 / 50%);
+}
+
 body {
-    font-family: 'IM Fell English SC', serif;
+    font-family: 'Permanent Marker', cursive;
     font-size: larger;
+}
+
+h2 img {
+    width: 35px;
+    border: 1px solid var(--gray);
+    padding: 3px;
+    border-radius: 20px;
 }
 
 header#header h1 {
@@ -23,8 +35,7 @@ footer#footer p a {
 }
 
 #mainWrapper {
-    /* background: url('../img/clouds.png') no-repeat; */
-    background: url('../img/ship.jpeg') no-repeat;
+    background: url('../img/clouds.png') repeat-x center fixed;
     background-size: cover;
 }
 
@@ -32,16 +43,23 @@ footer#footer p a {
     border: 3px solid var(--gray-dark);
     border-radius: 15px;
     box-shadow: 10px 10px 15px var(--blue);
-    background-color: var(--light);
+    background-color: var(--light-transparent);
 }
 
-#cityInput:focus {
+input#cityInput {
+    border-radius: 7px;
+    width: 100%;
+}
+
+input#cityInput:focus {
     box-shadow: 0 0 5px var(--pink);
 }
 
 #searchCity {
+    /* font-family: 'Bebas Neue', cursive; */
     border: 3px solid var(--blue);
-
+    background-color: var(--blue);
+    font-size: 1.75rem;
 }
 
 #searchCity:active {
@@ -50,9 +68,93 @@ footer#footer p a {
 }
 
 #weatherData {
+    /* font-family: 'Fontdiner Swanky', cursive; */
     border: 3px solid var(--dark);
     border-radius: 15px;
     box-shadow: 10px 10px 15px var(--blue);
-    background-color: var(--light);
+    background-color: var(--light-transparent);
     min-height: 500px;
 }
+
+#currentWeather {
+    background-color: var(--light);
+    border: 1px solid var(--dark);
+    border-radius: 10px;
+    /* width: 300px; */
+}
+
+#currentWeather div {
+    padding-left: 20px!important;
+}
+
+div#currentWeatherDescription {
+    font-size: smaller;
+    padding-left: 40px!important;
+}
+
+.weatherAlert {
+    background-color: var(--info);
+    border-radius: 10px;
+    cursor: help;
+    -webkit-text-stroke: 1px var(--dark);
+    color: var(--yellow);
+    font-size: large;
+    /* text-shadow:
+        2px 2px 0 var(--dark),
+      -1px -1px 0 var(--dark),  
+       1px -1px 0 var(--dark),
+       -1px 1px 0 var(--dark),
+        1px 1px 0 var(--dark); */
+}
+
+#currentForecast {
+    background-color: var(--light);
+    border: 1px solid var(--dark);
+    border-radius: 10px;
+    /* width: 300px; */
+}
+
+#uvindex {
+    border-radius: 10px;
+    box-shadow: 0 0 5px var(--gray-dark);
+}
+
+.uvLow {
+    background-color: var(--green);
+}
+
+.uvModerate {
+    background-color: var(--yellow);
+}
+
+.uvHigh {
+    background-color: var(--red);
+}
+
+.uvSevere {
+    background-color: var(--danger);
+}
+
+/* Bootstrap CSS color variables:
+    --blue: #007bff;
+    --indigo: #6610f2;
+    --purple: #6f42c1;
+    --pink: #e83e8c;
+    --red: #dc3545;
+    --orange: #fd7e14;
+    --yellow: #ffc107;
+    --green: #28a745;
+    --teal: #20c997;
+    --cyan: #17a2b8;
+    --white: #fff;
+    --gray: #6c757d; // transparent: rgb(108 117 125 / 50%)
+    --gray-dark: #343a40;
+    --primary: #007bff;
+    --secondary: #6c757d;
+    --success: #28a745;
+    --info: #17a2b8;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --light: #f8f9fa; // transparent: #f9fafbbf
+    --dark: #343a40;
+*/
