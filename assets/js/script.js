@@ -117,8 +117,11 @@ function renderData(cityData, weatherData) {
     for (let i = 0; i < weatherData.current.weather.length; i++) {
         thisDescription += ` ${weatherData.current.weather[i]['description']}.`;
     }
-    for (let i = 0; i < weatherData.alerts.length; i++) {
-        thisDescription += `<span data-id="${i}" class="weatherAlert mx-1 p-1">${weatherData.alerts[i]['event']}</span>`; // add jquery ui dialog widget to show the whole event.
+    console.log(weatherData.alerts);
+    if (weatherData.alerts !== undefined) {
+        for (let i = 0; i < weatherData.alerts.length; i++) {
+            thisDescription += `<span data-id="${i}" class="weatherAlert mx-1 p-1">${weatherData.alerts[i]['event']}</span>`; // add jquery ui dialog widget to show the whole event.
+        }
     }
     dataBlock.append($(divEl).attr('id', 'currentWeatherDescription').html(thisDescription));
 
