@@ -82,6 +82,10 @@ function getWeather(cityName) {
     // begin api call
     fetch(currentWeatherDataRequestUrl + cityName)
         .then(function (response) {
+            if (response.status === 404) {
+                weatherDataEl.text("City not found. Please try again.");
+                return;
+            }
             return response.json();
         })
         .then(function (cityData) {
