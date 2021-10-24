@@ -266,8 +266,14 @@ function getWindDirection(deg) {
 function renderCities() {
     citiesListEl.empty();
     let currentLocalStorage = getData();
+    let liClasses = "btn btn-lg btn-block";
     for (let index = currentLocalStorage.length - 1; index >= 0; index--) {
-        citiesListEl.append($(liEl).attr("id", `savedCities-${index}`).addClass("savedCity btn btn-lg btn-block").text(currentLocalStorage[index]));
+        if (currentLocalStorage[index] !== "None") {
+                liClasses += " savedCity";
+        } else {
+                liClasses += " noCity";
+        }
+        citiesListEl.append($(liEl).attr("id", `savedCities-${index}`).addClass(liClasses).text(currentLocalStorage[index]));
     }
     if (currentLocalStorage[0] !== "None") {
         citiesListEl.append($(liEl).attr("id", "deleteCities").addClass("btn btn-lg btn-block btn-danger").text("Remove All Saved Cities"));
