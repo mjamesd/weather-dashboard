@@ -6,7 +6,7 @@ Third-party APIs allow developers like me to access their data and functionality
 
 I'm using the [OpenWeather One Call API](https://openweathermap.org/api/one-call-api) to retrieve weather data for cities. I set up an account with an API key and read through the documentation. And I'm using `localStorage` to store persistent data.
 
-I deployed the webapp on Github Pages. The URL to the repo is [https://github.com/mjamesd/wk6-weather-dashboard](https://github.com/mjamesd/wk6-weather-dashboard).
+I deployed the webapp on [Github Pages](https://mjamesd.github.io/wk6-weather-dashboard/). The URL to the repo is [https://github.com/mjamesd/wk6-weather-dashboard](https://github.com/mjamesd/wk6-weather-dashboard).
 
 ## User Story
 
