@@ -47,6 +47,10 @@ li.savedCity {
     background-color: var(--teal);      
 }
 
+li.noCity {
+    background-color: var(--warning);      
+}
+
 input#cityInput {
     border-radius: 7px;
     width: 100%;
