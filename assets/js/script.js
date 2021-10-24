@@ -52,7 +52,7 @@ let oneCallWeatherDataRequestUrl = "https://api.openweathermap.org/data/2.5/onec
 let oneCallWeatherDataRequestUrl_suffix = "&lon=";
 let forecastWeatherDataRequestUrl = "https://api.openweathermap.org/data/2.5/forecast/daily?appid=" + myOpenWeatherApiKey + "&cnt=5&lat=";
 let forecastWeatherDataRequestUrl_suffix = "&lon=";
-let geocodingRequestUrl = "http://api.openweathermap.org/geo/1.0/direct?appid=" + myOpenWeatherApiKey + "&limit=1&q=";
+let geocodingRequestUrl = "https://api.openweathermap.org/geo/1.0/direct?appid=" + myOpenWeatherApiKey + "&limit=1&q=";
 
 // ~~~~~~~~~~~~~~~~~~~~
 // FUNCTIONS
