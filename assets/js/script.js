@@ -36,6 +36,8 @@ const citiesListEl = $("#citiesList");
 const divEl = "<div>";
 const sectionEl = "<section>";
 const articleEl = "<article>";
+const h2El = "<h2>";
+const h3El = "<h3>";
 const spanEl = "<span>";
 const pEl = "<p>";
 const liEl = "<li>";
@@ -46,6 +48,7 @@ const liEl = "<li>";
 let localStorageEntity = "dd-weather-cities";
 let datetime;
 let timer;
+let thisCityFullName;
 let myOpenWeatherApiKey = "2b2c5b74287143d7e917daac22179433";
 let currentWeatherDataRequestUrl = "https://api.openweathermap.org/data/2.5/weather?appid=" + myOpenWeatherApiKey + "&units=imperial&q=";
 let oneCallWeatherDataRequestUrl = "https://api.openweathermap.org/data/2.5/onecall?appid=" + myOpenWeatherApiKey + "&units=imperial&exclude=minutely,hourly&lat=";
@@ -82,9 +85,13 @@ function getWeather(cityName) {
     // begin api call
     fetch(currentWeatherDataRequestUrl + cityName)
         .then(function (response) {
-            if (response.status === 404) {
-                weatherDataEl.text("City not found. Please try again.");
-                return;
+            if (response.status == 404) {
+                $("#weatherWait").removeClass("fa-hourglass-start").addClass("fas fa-hourglass-end").attr("style", "box-shadow: 0 0 45px var(--danger);"); // change it to -end to show data is being processed
+                setTimeout(() => {
+                    // wait 750ms...
+                    weatherDataEl.text("City not found. Please try again.").hide().fadeIn();
+                }, 750);
+                throw new Error("City not found.");
             }
             return response.json();
         })
@@ -98,39 +105,41 @@ function getWeather(cityName) {
                     return geocodingResponse.json();
                 })
                 .then(function (geocodingData) {
+                    geocodingData = geocodingData[0]
                     fetch(oneCallWeatherDataRequestUrl + cityData.coord.lat + oneCallWeatherDataRequestUrl_suffix + cityData.coord.lon)
                         .then(function (oneCallResponse) {
                             return oneCallResponse.json();
                         })
                         .then(function (weatherData) {
-                            renderData(cityData, geocodingData[0], weatherData);
-                            saveData(cityData.name);
+                            // Set global variable for the city's full name with US state name (if applicable) and country
+                            thisCityFullName = cityData.name;
+                            if (geocodingData.state != null) {
+                                thisCityFullName += `, ${geocodingData.state}`
+                            }
+                            thisCityFullName += `, ${cityData.sys.country}`;
+                            renderData(cityData, weatherData);
+                            saveData(thisCityFullName);
                             renderCities();
                         });
                 });
         });
 }
 
-function renderData(cityData, geocodingData, weatherData) {
+function renderData(cityData, weatherData) {
     let dataBlock = $(articleEl).attr('id', 'currentWeather').addClass("m-1 p-2");
     // city name & weather icon(s)
-    let thisTitle = `Current Conditions in ${cityData.name}, `;
-    // If city is in the US, display the State abbreviation as well
-    if (geocodingData.state != null) {
-        thisTitle += `${geocodingData.state}, `;
-    }
-    thisTitle += cityData.sys.country;
+    let thisTitle = `Current Conditions in ${thisCityFullName}`;
     for (i = 0; i < weatherData.current.weather.length; i++) {
         thisTitle += ` <img src="https://openweathermap.org/img/w/${weatherData.current.weather[i]['icon']}.png" alt="${weatherData.current.weather[i]['main']}" title="${weatherData.current.weather[i]['description']}" class="weatherImage" />`;
     }
-    dataBlock.append($("<h2>").attr('id', 'currentWeatherCityName').html(thisTitle));
+    dataBlock.append($(h2El).attr('id', 'currentWeatherCityName').html(thisTitle));
     // date
-    dataBlock.append($("<h3>").attr('id', 'currentWeatherTime').text(`for ${moment(datetime).format("llll")}`)); // localized long form date
+    dataBlock.append($(h3El).attr('id', 'currentWeatherTime').text(`for ${moment(datetime).format("llll")}`)); // localized long form date
     // temp
     dataBlock.append($(divEl).attr('id', 'temperature').html(`Temperature: ${Math.round(weatherData.current.temp)}&deg;F`));
     // wind
     let windDirection = getWindDirection(weatherData.current.wind_deg);
-    dataBlock.append($(divEl).attr('id', 'wind').html(`Wind Speed: ${Math.round(weatherData.current.wind_speed)} mph ${windDirection}`));
+    dataBlock.append($(divEl).attr('id', 'wind').html(`Wind Speed: ${windDirection["arrow"]} ${Math.round(weatherData.current.wind_speed)} mph ${windDirection["ordinal"]}`));
     // humidity
     dataBlock.append($(divEl).attr('id', 'humidity').text(`Humidity: ${weatherData.current.humidity}%`));
     // uv index
@@ -143,12 +152,22 @@ function renderData(cityData, geocodingData, weatherData) {
     for (let i = 0; i < weatherData.current.weather.length; i++) {
         thisDescription += ` ${weatherData.current.weather[i]['description']}.`;
     }
-    console.log(weatherData.alerts);
     if (weatherData.alerts !== undefined) {
         for (let i = 0; i < weatherData.alerts.length; i++) {
             thisDescription += `<span id="weatherAlert-${i}" class="weatherAlert mx-1 p-1">${weatherData.alerts[i]['event']}</span>`;
             // jquery ui dialog widget to show the whole event
-            thisDescription += `<div style="display: none;" class="dialog" title="Weather Alert: ${weatherData.alerts[i]['event']}">${weatherData.alerts[i]['description']}</div>`;
+            let thisAlert = "";
+            let thisAlertData = weatherData.alerts[i]['description'].split("*");
+            for (let indexAlerts = 0; indexAlerts < thisAlertData.length; indexAlerts++) {
+                let curThisAlertData = thisAlertData[indexAlerts].split("...");
+                if (curThisAlertData[0] != undefined) {
+                    thisAlert += `${curThisAlertData[0]}<br />`;
+                    if (curThisAlertData[1] != undefined) {
+                        thisAlert += `${curThisAlertData[1]}<br />`;
+                    }
+                }
+            }
+            thisDescription += `<div style="display: none;" class="dialog" title="Weather Alert: ${weatherData.alerts[i]['event']}">${thisAlert}</div>`;
         }
     }
     dataBlock.append($(divEl).attr('id', 'currentWeatherDescription').html(thisDescription));
@@ -167,7 +186,9 @@ function renderData(cityData, geocodingData, weatherData) {
     // write the current weather to the page <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <--
     weatherDataEl.html(dataBlock.hide().fadeIn("slow"));
 
-    let forecastBlock = $(divEl).attr("id", "currentForecast").addClass("row justify-content-around m-1 p-2");
+    let forecastBlockContainer = $(articleEl).attr("id", "currentForecastContainer");
+    forecastBlockContainer.append($(h2El).text(`Five Day Forecast for ${thisCityFullName}:`).addClass("m-1 p-2"));
+    forecastBlock = $(divEl).attr("id", "currentForecast").addClass("row justify-content-around m-1 p-2");
     // now output the 5-day forecast
     for (let day = 0; day < 5; day++) {
         const thisDay = weatherData.daily[day];
@@ -217,49 +238,54 @@ function renderData(cityData, geocodingData, weatherData) {
         // add the day forecast to the block <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <--
         forecastBlock.append(thisForecastDay);
     }
+    forecastBlockContainer.append(forecastBlock);
     // write the whole forecast to the page <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <--
-    weatherDataEl.append(forecastBlock);
+    weatherDataEl.append(forecastBlockContainer);
 }
 
 function getWindDirection(deg) {
     let arrowDeg = deg + 180; // wind direction is the direction *from which* the wind is coming, so we need to flip the arrow
     let windDirection = `<i class="fas fa-long-arrow-alt-up" style="transform: rotate(${arrowDeg}deg)"></i> `;
     if (deg == 0 || deg == 360) {
-        windDirection += 'N';
+        windDirectionOrdinal = 'N';
     } else if (deg > 0 && deg < 45) {
-        windDirection += 'NNE';
+        windDirectionOrdinal = 'NNE';
     } else if (deg == 45) {
-        windDirection += 'NE';
+        windDirectionOrdinal = 'NE';
     } else if (deg > 45 && deg < 90) {
-        windDirection += 'ENE';
+        windDirectionOrdinal = 'ENE';
     } else if (deg == 90) {
-        windDirection += 'E';
+        windDirectionOrdinal = 'E';
     } else if (deg > 90 && deg < 135) {
-        windDirection += 'ESE';
+        windDirectionOrdinal = 'ESE';
     } else if (deg == 135) {
-        windDirection += 'SE';
+        windDirectionOrdinal = 'SE';
     } else if (deg > 135 && deg < 180) {
-        windDirection += 'SSE';
+        windDirectionOrdinal = 'SSE';
     } else if (deg == 180) {
-        windDirection += 'S';
+        windDirectionOrdinal = 'S';
     } else if (deg > 180 && deg < 225) {
-        windDirection += 'SSW';
+        windDirectionOrdinal = 'SSW';
     } else if (deg == 225) {
-        windDirection += 'SW';
+        windDirectionOrdinal = 'SW';
     } else if (deg > 225 && deg < 270) {
-        windDirection += 'WSW';
+        windDirectionOrdinal = 'WSW';
     } else if (deg == 270) {
-        windDirection += 'W';
+        windDirectionOrdinal = 'W';
     } else if (deg > 270 && deg < 315) {
-        windDirection += 'WNW';
+        windDirectionOrdinal = 'WNW';
     } else if (deg == 315) {
-        windDirection += 'NW';
+        windDirectionOrdinal = 'NW';
     } else if (deg > 315 && deg < 360) {
-        windDirection += 'NNW';
+        windDirectionOrdinal = 'NNW';
     } else {
         return false;
     }
-    return windDirection;
+    let thisWind = {
+        arrow: windDirection,
+        ordinal: windDirectionOrdinal
+    };
+    return thisWind;
 }
 
 // Render cities in sidebar list, in reverse order so the most recent search is on top
@@ -305,9 +331,18 @@ function saveData(data) {
 }
 
 function destroyData() {
-    localStorage.setItem(localStorageEntity, null);
+    localStorage.removeItem(localStorageEntity);
     renderCities();
     return;
+}
+
+function properNounCapitalization(data) {
+    let words = data.split(" ");
+    for (let index = 0; index < words.length; index++) {
+        words[index] = words[index][0].toUpperCase() + words[index].substr(1);
+    }
+    words.join(" ");
+    return words;
 }
 
 // ~~~~~~~~~~~~~~~~~~~~
@@ -315,7 +350,6 @@ function destroyData() {
 // ~~~~~~~~~~~~~~~~~~~~
 // Attach event listener for all elements with "savedCity" class, even dynamically-added ones.
 $(document).on("click", ".savedCity", function() {
-    console.log($(this)[0].innerText);
     getWeather($(this)[0].innerText);
 });
 $(document).on("click", ".weatherAlert", function() {

@@ -121,11 +121,10 @@ div#currentWeatherDescription {
         1px 1px 0 var(--dark); */
 }
 
-#currentForecast {
+#currentForecastContainer {
     background-color: var(--light);
     border: 1px solid var(--dark);
     border-radius: 10px;
-    /* width: 300px; */
 }
 
 .forecastDay {
