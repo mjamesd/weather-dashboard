@@ -46,11 +46,11 @@ const liEl = "<li>";
 let localStorageEntity = "dd-weather-cities";
 let datetime;
 let timer;
-let myOpenWeatherApiKey = "2b2c5b74287143d7e917daac22179433";
-let currentWeatherDataRequestUrl = "https://api.openweathermap.org/data/2.5/weather?appid=" + myOpenWeatherApiKey + "&units=imperial&q=";
-let oneCallWeatherDataRequestUrl = "https://api.openweathermap.org/data/2.5/onecall?appid=" + myOpenWeatherApiKey + "&units=imperial&exclude=minutely,hourly&lat=";
+let myOpenWeatherApiKey = "ec45c51a4c4ab3b9aa2cf3d3f9ed8078";
+let currentWeatherDataRequestUrl = "https://api.openweathermap.org/data/3.0/weather?appid=" + myOpenWeatherApiKey + "&units=imperial&q=";
+let oneCallWeatherDataRequestUrl = "https://api.openweathermap.org/data/3.0/onecall?appid=" + myOpenWeatherApiKey + "&units=imperial&exclude=minutely,hourly&lat=";
 let oneCallWeatherDataRequestUrl_suffix = "&lon=";
-let forecastWeatherDataRequestUrl = "https://api.openweathermap.org/data/2.5/forecast/daily?appid=" + myOpenWeatherApiKey + "&cnt=5&lat=";
+let forecastWeatherDataRequestUrl = "https://api.openweathermap.org/data/3.0/forecast/daily?appid=" + myOpenWeatherApiKey + "&cnt=5&lat=";
 let forecastWeatherDataRequestUrl_suffix = "&lon=";
 let geocodingRequestUrl = "https://api.openweathermap.org/geo/1.0/direct?appid=" + myOpenWeatherApiKey + "&limit=1&q=";
 
