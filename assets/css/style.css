@@ -98,11 +98,8 @@ input#cityInput:focus {
 
 #currentWeather div {
     padding-left: 20px!important;
-}
-
-div#currentWeatherDescription {
-    font-size: smaller;
-    padding-left: 40px!important;
+    font-family: 'Amatic SC', cursive;
+    font-size: 1.75rem;
     text-transform: capitalize;
 }
 
