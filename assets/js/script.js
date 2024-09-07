@@ -1,6 +1,7 @@
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Author: Mark Drummond
 // Date: 23-Oct-2021
+// Revision Date: 07-Sep-2024
 // Assignment: Weather Dashboard
 // See README.md for more information
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -80,46 +81,59 @@ function getWeather(cityName) {
         // wait 750ms to give user a visual cue that their input was received...
     }, 750);
     // begin api call
-    fetch(currentWeatherDataRequestUrl + cityName)
-        .then(function (response) {
-            if (response.status === 404) {
-                weatherDataEl.text("City not found. Please try again.");
-                return;
-            }
-            return response.json();
-        })
-        .then(function (cityData) {
-            $("#weatherWait").removeClass("fa-hourglass-start").addClass("fas fa-hourglass-end").attr("style", "box-shadow: 0 0 45px var(--success);"); // change it to -end to show data is being processed
-            setTimeout(() => {
-                // wait 750ms...
-            }, 750);
-            fetch(geocodingRequestUrl + cityData.name) // Neither other API call returns the city's state. The Geocoding API does so.
-                .then(function (geocodingResponse) {
-                    return geocodingResponse.json();
-                })
-                .then(function (geocodingData) {
-                    fetch(oneCallWeatherDataRequestUrl + cityData.coord.lat + oneCallWeatherDataRequestUrl_suffix + cityData.coord.lon)
-                        .then(function (oneCallResponse) {
-                            return oneCallResponse.json();
-                        })
-                        .then(function (weatherData) {
-                            renderData(cityData, geocodingData[0], weatherData);
-                            saveData(cityData.name);
-                            renderCities();
-                        });
-                });
-        });
+    fetch(geocodingRequestUrl + cityName)
+    .then(function (geocodingResponse) {
+        if (geocodingResponse.status === 404) {
+            weatherDataEl.text("City not found. Please try again.");
+            return;
+        }
+        return geocodingResponse.json();
+    })
+    .then(function (geocodingData) {
+        let cityData = geocodingData[0];
+        fetch(
+            oneCallWeatherDataRequestUrl +
+                cityData.lat +
+                oneCallWeatherDataRequestUrl_suffix +
+                cityData.lon
+        )
+            .then(function (weatherDataResponse) {
+                setTimeout(() => {
+                    // wait 750ms...
+                    $("#weatherWait")
+                        .removeClass("fa-hourglass-start")
+                        .addClass("fas fa-hourglass-end")
+                        .attr(
+                            "style",
+                            "box-shadow: 0 0 45px var(--success);"
+                        ); // change it to -end to show data is being processed
+                }, 750);
+                if (weatherDataResponse.status === 404) {
+                    weatherDataEl.text("City not found. Please try again.");
+                    return;
+                }
+                return weatherDataResponse.json();
+            })
+            .then(function (weatherData) {
+                renderData(
+                    cityData,
+                    weatherData
+                );
+                saveData(cityData.name);
+                renderCities();
+            });
+    });
 }
 
-function renderData(cityData, geocodingData, weatherData) {
+function renderData(cityData, weatherData) {
     let dataBlock = $(articleEl).attr('id', 'currentWeather').addClass("m-1 p-2");
     // city name & weather icon(s)
     let thisTitle = `Current Conditions in ${cityData.name}, `;
     // If city is in the US, display the State abbreviation as well
-    if (geocodingData.state != null) {
-        thisTitle += `${geocodingData.state}, `;
+    if (cityData.state != null) {
+        thisTitle += `${cityData.state}, `;
     }
-    thisTitle += cityData.sys.country;
+    thisTitle += cityData.country;
     for (i = 0; i < weatherData.current.weather.length; i++) {
         thisTitle += ` <img src="https://openweathermap.org/img/w/${weatherData.current.weather[i]['icon']}.png" alt="${weatherData.current.weather[i]['main']}" title="${weatherData.current.weather[i]['description']}" class="weatherImage" />`;
     }
